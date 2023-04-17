@@ -13,11 +13,15 @@ import streamlit as st
 import uuid
 
 
+
 try:
     api_keys=dotenv_values()
     os.environ['OPENAI_API_KEY'] = dotenv_values()['openai_api_key'] #set environment variable
+    print('set api')
 except:
     pass
+
+
 
 
 #initialize variables in session state
@@ -52,8 +56,9 @@ with tab1:
     
 with tab2:
     # Enter OpenAI API here
-    st.session_state['openai_api_key'] = st.text_input('Enter your OpenAI API key:', placeholder ='sk-...')
-    os.environ['OPENAI_API_KEY'] = st.session_state['openai_api_key']
+    if os.environ['OPENAI_API_KEY'] == '':
+        st.session_state['openai_api_key'] = st.text_input('Enter your OpenAI API key:', placeholder ='sk-...')
+        os.environ['OPENAI_API_KEY'] = st.session_state['openai_api_key']
 
 
 #UI button - create index and agent

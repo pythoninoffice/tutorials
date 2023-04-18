@@ -1,4 +1,4 @@
-from dotenv import dotenv_values
+#from dotenv import dotenv_values
 from langchain.agents import initialize_agent, load_tools
 from langchain.callbacks import get_openai_callback
 from langchain.chains import RetrievalQA
@@ -12,17 +12,12 @@ import plotly.express as px
 import streamlit as st
 import uuid
 
-
-
-try:
-    api_keys=dotenv_values()
-    os.environ['OPENAI_API_KEY'] = dotenv_values()['openai_api_key'] #set environment variable
-    print('set api')
-except:
-    pass
-
-
-
+# try:
+#     api_keys=dotenv_values()
+#     os.environ['OPENAI_API_KEY'] = dotenv_values()['openai_api_key'] #set environment variable
+#     print('set api')
+# except:
+#     pass
 
 #initialize variables in session state
 if 'query_result' not in st.session_state:

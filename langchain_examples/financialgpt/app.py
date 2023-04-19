@@ -38,7 +38,7 @@ def make_dir():
 tab1, tab2 = st.tabs(['Upload', 'API Key'])
 
 with tab1:
-    
+    st.header("enter your openai API on the <API Key> tab!")
     #URL for pdf
     url = st.text_input('enter pdf url')
     if url == '':

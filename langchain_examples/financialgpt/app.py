@@ -80,9 +80,9 @@ with tab1:
     
 with tab2:
     # Enter OpenAI API here
-    if os.environ['OPENAI_API_KEY'] == '':
-        st.session_state['openai_api_key'] = st.text_input('Enter your OpenAI API key:', placeholder ='sk-...')
-        os.environ['OPENAI_API_KEY'] = st.session_state['openai_api_key']
+    # if os.environ['OPENAI_API_KEY'] == '':
+    st.session_state['openai_api_key'] = st.text_input('Enter your OpenAI API key:', placeholder ='sk-...')
+    os.environ['OPENAI_API_KEY'] = st.session_state['openai_api_key']
 
 
 #UI button - create index and agent

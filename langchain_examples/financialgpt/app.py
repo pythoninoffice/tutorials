@@ -11,6 +11,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 import uuid
+import requests
 
 # try:
 #     api_keys=dotenv_values()
@@ -27,21 +28,49 @@ if 'token_tracking' not in st.session_state:
 st.session_state['curr_dir'] = os.path.dirname(__file__)
 st.session_state['agent_created_files_folder'] = rf"{st.session_state['curr_dir']}\agent_created_files"
 
+def make_dir():
+    st.session_state['query_id'] = str(uuid.uuid4())
+    st.session_state['session_folder'] = f"{st.session_state['agent_created_files_folder'] }\\{st.session_state['query_id']}"
+    if not os.path.exists(st.session_state['session_folder']):
+                os.makedirs(st.session_state['session_folder'])
+
+
 tab1, tab2 = st.tabs(['Upload', 'API Key'])
 
-
 with tab1:
+    
+    #URL for pdf
+    url = st.text_input('enter pdf url')
+    if url == '':
+        pass
+    elif (not url.endswith('.pdf')):
+        st.error('enter a url ends with ".pdf"!')
+    else:
+        
+        make_dir()
+        response = requests.get(url)
+        if response.status_code == 200:
+            with open(f"{st.session_state['session_folder']}\\source.pdf", 'wb') as f:
+                f.write(response.content)
+            
+        
+            loader = PyPDFLoader(f"{st.session_state['session_folder']}\\source.pdf")
+            pages = loader.load_and_split()
+            page_range = st.slider('Select a range of pages to ', 1, len(pages), (3, 8))
+        
+        
+    
     #UI upload file
     uploaded_file = st.file_uploader('upload a pdf', type=['pdf'])
 
     if uploaded_file is not None:
-        if not os.path.exists('uploaded_files'):
-            os.makedirs('uploaded_files')
-        with open(os.path.join('uploaded_files', uploaded_file.name), 'wb') as f:
+        make_dir() #create a new folder
+       
+        with open(f"{st.session_state['session_folder']}\\source.pdf", 'wb') as f:
             f.write(uploaded_file.getbuffer())
-            st.success(f"file has been saved to {os.path.join('uploaded_files', uploaded_file.name)}")
+            st.success(f"file has been saved to {st.session_state['session_folder']}\\source.pdf")
         st.write(uploaded_file)
-        loader = PyPDFLoader(os.path.join('uploaded_files', uploaded_file.name))
+        loader = PyPDFLoader(f"{st.session_state['session_folder']}\\source.pdf")
         pages = loader.load_and_split()
         page_range = st.slider('Select a range of pages to ', 1, len(pages), (3, 8))
         st.write(page_range)
@@ -51,9 +80,9 @@ with tab1:
     
 with tab2:
     # Enter OpenAI API here
-    #if os.environ['OPENAI_API_KEY'] == '':
-    st.session_state['openai_api_key'] = st.text_input('Enter your OpenAI API key:', placeholder ='sk-...')
-    os.environ['OPENAI_API_KEY'] = st.session_state['openai_api_key']
+    if os.environ['OPENAI_API_KEY'] == '':
+        st.session_state['openai_api_key'] = st.text_input('Enter your OpenAI API key:', placeholder ='sk-...')
+        os.environ['OPENAI_API_KEY'] = st.session_state['openai_api_key']
 
 
 #UI button - create index and agent
@@ -94,20 +123,12 @@ if submit_prompt:
     st.session_state['prompt'] = prompt_box
     if prompt != '':
         with get_openai_callback() as cb:
-            print(prompt)
             prompt += '. when parsing numbers, remove special symbols such as , %'
-            
             st.session_state['query_result'] = st.session_state['qa'].run(prompt)
-            st.session_state['query_id'] = str(uuid.uuid4())
-            print(st.session_state['query_result'])
-            
-            if not os.path.exists(f"{st.session_state['agent_created_files_folder'] }\\{st.session_state['query_id']}"):
-                os.makedirs(f"{st.session_state['agent_created_files_folder'] }\\{st.session_state['query_id']}")
-            
+               
             if st.session_state['agent'] is not None:
-                
                 st.session_state['agent_created_file_location'] = f"{st.session_state['agent_created_files_folder'] }\\{st.session_state['query_id']}\\agent_output.csv"
-                print(st.session_state['agent_created_file_location'])
+
                 prompt_template = f"""put the following data into a pandas dataframe, then save it into an csv file {st.session_state['agent_created_file_location']}, note you need to escape the backslashes in the file path, no need to check if file is created.
                                     data:
                                     {st.session_state['query_result']}
@@ -135,11 +156,11 @@ st.write('')
 
 display_chart_button = st.button('Display chart')
 if display_chart_button:
-    print(st.session_state['agent_created_file_location'])
+    
     if os.path.exists(st.session_state['agent_created_file_location']):
-        print('found file')
+        
         df = pd.read_csv(st.session_state['agent_created_file_location'])
-        print(df[df.columns[1]].dtype)
+        
         if df[df.columns[1]].dtype == 'object':
             df[df.columns[1]] = df[df.columns[1]].str.replace(',|%','', regex=True)
         df[df.columns[1]] = df[df.columns[1]].astype(float)

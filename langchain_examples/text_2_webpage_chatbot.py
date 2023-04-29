@@ -6,7 +6,6 @@ import os
 from langchain.chat_models import ChatOpenAI
 from langchain.llms import OpenAI
 from langchain.chains import ConversationChain, LLMChain
-from langchain.memory import ConversationBufferWindowMemory
 from langchain.prompts.chat import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
@@ -29,7 +28,7 @@ def generate_code(human_input):
     system_message_prompt = SystemMessagePromptTemplate.from_template(system_prompt_template)
     human_message_prompt = HumanMessagePromptTemplate.from_template(human_prompt_template)
     # delete the gpt-4 model_name to use the default gpt-3.5 turbo for faster results
-    gpt_4 = ChatOpenAI(temperature=0, model_name='gpt-4')
+    gpt_4 = ChatOpenAI(temperature=0, model_name='gpt-4')   #chat model, no memory
     conversation = [system_message_prompt, human_message_prompt]
     chat_prompt = ChatPromptTemplate.from_messages(conversation)
     response = gpt_4(chat_prompt.format_prompt( 

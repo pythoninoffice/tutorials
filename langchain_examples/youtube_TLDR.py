@@ -1,5 +1,5 @@
-from dotenv import load_dotenv
 import streamlit as st
+#from dotenv import load_dotenv
 from langchain.document_loaders import YoutubeLoader
 from langchain.chat_models import ChatOpenAI
 from langchain.llms import OpenAI
@@ -11,8 +11,8 @@ from langchain.prompts.chat import (
     HumanMessagePromptTemplate,
 )
 
-load_dotenv() #load environment variables from .env file
-gpt_v = ChatOpenAI(temperature=0.4, model_name='gpt-3.5-turbo',openai_api_key="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") # create ChatOpenAI instance 
+#load_dotenv() #load environment variables from .env file
+gpt_v = ChatOpenAI(temperature=0.4, model_name='gpt-3.5-turbo',openai_api_key="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") # create ChatOpenAI instance 
 #gpt_v = ChatOpenAI(temperature=0.5, max_tokens=1000, engine="gpt-3.5", openai_api_key="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")
 
 

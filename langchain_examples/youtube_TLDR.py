@@ -12,7 +12,7 @@ from langchain.prompts.chat import (
 )
 
 load_dotenv() #load environment variables from .env file
-gpt_v = ChatOpenAI(temperature=0.4, model_name='gpt-3.5-turbo',openai_api_key="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") # create ChatOpenAI instance 
+gpt_v = ChatOpenAI(temperature=0.4, model_name='gpt-3.5-turbo',openai_api_key="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") # create ChatOpenAI instance 
 #gpt_v = ChatOpenAI(temperature=0.5, max_tokens=1000, engine="gpt-3.5", openai_api_key="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")
 
 
